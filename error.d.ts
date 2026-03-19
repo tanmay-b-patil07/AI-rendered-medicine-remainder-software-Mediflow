@@ -1,7 +1,3 @@
-declare class BrowserslistError extends Error {
-  constructor(message: any)
-  name: 'BrowserslistError'
-  browserslist: true
-}
-
-export = BrowserslistError
+import Error from './dist/pages/_error'
+export * from './dist/pages/_error'
+export default Error
