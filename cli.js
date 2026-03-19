@@ -1,16 +1,42 @@
 #!/usr/bin/env node
-'use strict';
 
-var looseEnvify = require('./');
-var fs = require('fs');
+let { readFileSync } = require('fs')
+let { join } = require('path')
 
-if (process.argv[2]) {
-  fs.createReadStream(process.argv[2], {encoding: 'utf8'})
-    .pipe(looseEnvify(process.argv[2]))
-    .pipe(process.stdout);
+require('./check-npm-version')
+let updateDb = require('./')
+
+const ROOT = __dirname
+
+function getPackage() {
+  return JSON.parse(readFileSync(join(ROOT, 'package.json')))
+}
+
+let args = process.argv.slice(2)
+
+let USAGE = 'Usage:\n  npx update-browserslist-db\n'
+
+function isArg(arg) {
+  return args.some(i => i === arg)
+}
+
+function error(msg) {
+  process.stderr.write('update-browserslist-db: ' + msg + '\n')
+  process.exit(1)
+}
+
+if (isArg('--help') || isArg('-h')) {
+  process.stdout.write(getPackage().description + '.\n\n' + USAGE + '\n')
+} else if (isArg('--version') || isArg('-v')) {
+  process.stdout.write('browserslist-lint ' + getPackage().version + '\n')
 } else {
-  process.stdin.resume()
-  process.stdin
-    .pipe(looseEnvify(__filename))
-    .pipe(process.stdout);
+  try {
+    updateDb()
+  } catch (e) {
+    if (e.name === 'BrowserslistUpdateError') {
+      error(e.message)
+    } else {
+      throw e
+    }
+  }
 }
