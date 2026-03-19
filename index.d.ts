@@ -1,14 +1,12 @@
-import type { StorageProvider } from './types/StorageProvider';
-import { EmailJSResponseStatus } from './models/EmailJSResponseStatus';
-import { init } from './methods/init/init';
-import { send } from './methods/send/send';
-import { sendForm } from './methods/sendForm/sendForm';
-export type { StorageProvider };
-export { init, send, sendForm, EmailJSResponseStatus };
-declare const _default: {
-    init: (options: import("./types/Options").Options | string, origin?: string) => void;
-    send: (serviceID: string, templateID: string, templateParams?: Record<string, unknown>, options?: import("./types/Options").Options | string) => Promise<EmailJSResponseStatus>;
-    sendForm: (serviceID: string, templateID: string, form: string | HTMLFormElement, options?: import("./types/Options").Options | string) => Promise<EmailJSResponseStatus>;
-    EmailJSResponseStatus: typeof EmailJSResponseStatus;
-};
-export default _default;
+import type { FileSystemAdapter, StatAsynchronousMethod, StatSynchronousMethod } from './adapters/fs';
+import * as async from './providers/async';
+import Settings, { Options } from './settings';
+import type { Stats } from './types';
+declare type AsyncCallback = async.AsyncCallback;
+declare function stat(path: string, callback: AsyncCallback): void;
+declare function stat(path: string, optionsOrSettings: Options | Settings, callback: AsyncCallback): void;
+declare namespace stat {
+    function __promisify__(path: string, optionsOrSettings?: Options | Settings): Promise<Stats>;
+}
+declare function statSync(path: string, optionsOrSettings?: Options | Settings): Stats;
+export { Settings, stat, statSync, AsyncCallback, FileSystemAdapter, StatAsynchronousMethod, StatSynchronousMethod, Options, Stats };
